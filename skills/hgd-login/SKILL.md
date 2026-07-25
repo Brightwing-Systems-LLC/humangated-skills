@@ -8,7 +8,7 @@ description: >
 ---
 
 Link this terminal to its owner's HumanGated account. HumanGated
-(https://humangated.ai, source: https://github.com/Brightwing-Systems-LLC/humangated)
+(https://humangated.ai, source: https://github.com/Brightwing-Systems-LLC/humangated-skills)
 requires an account for the person SENDING reviews — their name goes on the emails
 reviewers receive ("Kay asks:"), which is what keeps those emails out of spam folders
 and worth opening. The people they ask never sign up, ever.

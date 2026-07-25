@@ -8,7 +8,7 @@ description: >
 ---
 
 Upload an HTML prototype to HumanGated and return a shareable link. HumanGated
-(https://humangated.ai, source: https://github.com/Brightwing-Systems-LLC/humangated) hosts
+(https://humangated.ai, source: https://github.com/Brightwing-Systems-LLC/humangated-skills) hosts
 the file behind an unguessable link, gated by an email allowlist, for a flat 30 days.
 Invited reviewers pin comments on the page; `/hgd-pull` pulls them back.
 
@@ -150,7 +150,7 @@ binary endpoints that have nowhere to put it, the `X-HumanGated-Skills-Status` h
 Ask before updating, then run exactly ONE of:
 
 ```bash
-npx skills@latest add Brightwing-Systems-LLC/humangated   # if installed via npx
+npx skills@latest add Brightwing-Systems-LLC/humangated-skills   # if installed via npx
 claude plugin install humangated@humangated                # if installed as a plugin
 ```
 
