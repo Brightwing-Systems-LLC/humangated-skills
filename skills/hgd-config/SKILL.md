@@ -13,7 +13,7 @@ Arguments: empty to show, `set-default <domain>` or `clear-default` to change.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.2.0
+HGD_SKILLS_VERSION=3.3.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 

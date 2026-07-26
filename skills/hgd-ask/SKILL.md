@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.2.0
+HGD_SKILLS_VERSION=3.3.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -51,10 +51,22 @@ Optional fields: `"urgency":"blocking"`; `"verify":true` (sensitive items — th
 must verify their email before it opens); `"reshare":"off"` or `"reshare":"@acme.com"`
 (propagation policy; default `anyone`); `"ask_disposition":true` (ask for an explicit
 Ready / Needs-revision read); `"gate":true` (see Gates below — implies
-`ask_disposition`); `"resume_note":"..."` (your note-to-future-self: what you were
+`ask_disposition`); `"reference":"..."` (a ticket id or issue URL — see below);
+`"resume_note":"..."` (your note-to-future-self: what you were
 doing and what to do with each outcome — it comes back verbatim on every status,
 wait, and pull, so ANY later session can resume the workflow without the user
 re-explaining. Write one whenever the response won't land in this session).
+
+## References — keep the ask tied to where the work lives
+
+If the operator mentions a ticket, issue, or PR ("ask Mike about the signup
+copy for ACME-1234"), pass it as `"reference"`. It is **owner-side only** —
+it rides the atom, comes back on every status and pull, and is never shown to
+the reviewer. Internal ticket URLs leak roadmap, org structure, and customer
+names, so don't put one in the `objective` either.
+
+What it's for: when you later pull the response, you can write the outcome
+back where the team actually works — see `/hgd-pull`.
 
 ## Gates — block until the human rules
 
