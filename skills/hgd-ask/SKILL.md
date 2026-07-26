@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.3.0
+HGD_SKILLS_VERSION=3.4.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -43,11 +43,15 @@ curl -s -X POST "$HGD_BASE_URL/api/requests" \
   -H "Authorization: Bearer $HGD_TOKEN" -H "X-HumanGated-Skills: $HGD_SKILLS_VERSION" \
   -H "Content-Type: application/json" \
   -d '{"artifact":"<uuid>","reviewer_email":"mike@partner.co",
-       "objective":"<the operator's question, verbatim>",
-       "urgency":"normal"}'
+       "objective":"<the operator's question, verbatim>"}'
 ```
 
-Optional fields: `"urgency":"blocking"`; `"verify":true` (sensitive items — the reviewer
+**Don't reach for `"urgency":"blocking"`.** It is accepted for compatibility and
+it is display-only — nothing enforces it, and telling a reviewer work is blocked
+when nothing is holding it teaches them to ignore the signal. If the work really
+is held, that is `"gate":true`, which the reviewer's email and inbox both reflect.
+
+Optional fields: `"verify":true` (sensitive items — the reviewer
 must verify their email before it opens); `"reshare":"off"` or `"reshare":"@acme.com"`
 (propagation policy; default `anyone`); `"ask_disposition":true` (ask for an explicit
 Ready / Needs-revision read); `"gate":true` (see Gates below — implies
@@ -86,16 +90,30 @@ while :; do
 done
 ```
 
-Approvals take human time. If the session can't stay open, DON'T spin — leave a
-`resume_note`, tell the user the ask is parked ("Mike's ruling will resume this;
-any session can pick it up"), and stop. If nobody pulls within ~30 minutes of the
-response landing, the platform emails the user directly with the request uuid and
-the exact `/hgd-pull` command — the loop closes itself.
+Approvals take human time, so **how long to hold depends on what the operator
+said, not on the gate flag**:
+
+- **They're waiting on it right now** ("I'll wait", "don't do anything until Mike
+  says yes") — run the loop above and stay with it while the session is theirs.
+- **They gave a horizon** ("by Friday", "before we ship Thursday") — say plainly
+  that you cannot hold until then, leave a `resume_note`, and stop. Then work on
+  something outside the gated area if there is any.
+- **They just want the sign-off eventually** — don't spin at all. Leave the
+  `resume_note` and move on.
+
+In every case: leave the `resume_note` before you stop, and say the ask is parked
+("Mike's ruling will resume this; any session can pick it up"). If nobody pulls
+within ~30 minutes of the response landing, the platform emails the operator
+directly with the request uuid and the exact `/hgd-pull` command — the loop
+closes itself.
+
+**Never claim you'll stop working on something you can't actually be stopped
+from touching.** Say what you'll do; don't promise enforcement that isn't there.
 
 ## Step 4 — Report (keep this exact shape)
 
 ```
-**Sent to {reviewer}** · `{artifact name}` v{n}{ · BLOCKING if urgent}{ · GATE if gated}
+**Sent to {reviewer}** · `{artifact name}` v{n}{ · GATE if gated}
 Ask: _"{objective, echoed back}"_
 {share_url}  ·  notified by email
 Hand-deliver instead (Slack/DM, works once): {hand_url}
