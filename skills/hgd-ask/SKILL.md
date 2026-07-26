@@ -1,6 +1,6 @@
 ---
 name: hgd-ask
-description: Use when the operator asks to get a named human's eyes on something they're building — "check with Mike on this prompt, ask him about X", "send this prototype to Dana for feedback", "have Sarah look at the refund logic". Opens a HumanGated review request (this artifact, this version, this question, for this person), notifies them by email, and returns the share + hand-delivery links. Does NOT wait for the response (use hgd-pull for that).
+description: Use when the operator asks to get a named human's eyes on something they're building — "check with Mike on this prompt, ask him about X", "send this prototype to Dana for feedback", "have Sarah look at the refund logic", "ask the design group whether this reads right". Opens a HumanGated review request (this artifact, this version, this question, for this person), notifies them by email, and returns the share + hand-delivery links. A configured group opens one request per person. Does NOT wait for the response (use hgd-pull for that).
 ---
 
 Open one review request — *this artifact, this version, this question, for this person* —
@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.4.0
+HGD_SKILLS_VERSION=3.5.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -36,7 +36,8 @@ No token → run `/hgd-login` first (one browser link + a magic-link email, ~60s
 
 The `objective` is THE ASK, in the operator's own words — pass it through, don't
 editorialize. Don't invent the reviewer: if the name is ambiguous ("Mike who?"), ask
-for the email rather than guessing.
+for the email rather than guessing. If it names a configured group, see **Groups**
+below — you make this call once per person.
 
 ```bash
 curl -s -X POST "$HGD_BASE_URL/api/requests" \
@@ -60,6 +61,44 @@ Ready / Needs-revision read); `"gate":true` (see Gates below — implies
 doing and what to do with each outcome — it comes back verbatim on every status,
 wait, and pull, so ANY later session can resume the workflow without the user
 re-explaining. Write one whenever the response won't land in this session).
+
+## Groups — one alias, several individual asks
+
+`$CFG/config` may hold local aliases (`/hgd-config set-group`). If the reviewer the
+operator named is a bare word — no `@` — look it up, lowercased with `-` and spaces
+mapped to `_`, the way it was stored:
+
+```bash
+alias=design
+members=$(grep -m1 "^HGD_GROUP_$alias=" "$CFG/config" 2>/dev/null | cut -d= -f2-)
+# mike@acme.com,dana@acme.com,sam@partner.co
+```
+
+A hit is a **fan-out**: run the Step 3 call once per address, changing only
+`reviewer_email`. Everything else — `objective`, `resume_note`, `reference`, `verify`,
+`reshare` — is byte-identical on each, because each one is a whole ask on its own
+terms. No hit means it was a person's name all along; carry on as before. An exact
+group match wins over a person, so if the operator means a human called Design, they
+can give the address.
+
+Name the people and get an OK before you send. This is N emails to N humans and
+attention is the scarce thing here — the operator should see the list they are
+spending, not a count.
+
+**No reviewer may learn the others were asked.** Nothing in the payload says "group",
+each email is the ordinary one-person ask, and there is no shared thread. That is
+deliberate, not an omission: naming the crowd triggers the bystander effect and turns a
+personal ask into a broadcast nobody owns. Never mention the fan-out in the `objective`
+either — the operator's words go through verbatim, and their words are about the work.
+
+**Don't gate a fan-out.** A gate is one named person's authority, and N gates have no
+rule for when the work is unblocked — there is no quorum and no any-one-approves. If the
+operator wants sign-off from a group, ask which ONE person rules, gate that ask, and send
+the rest ungated for feedback.
+
+If a call fails partway through (bad address, 422), the asks already opened stay open —
+there is nothing to undo and no reason to. Report what landed and what didn't, and let
+the operator retry the failures by address.
 
 ## References — keep the ask tied to where the work lives
 
@@ -125,6 +164,24 @@ or *"Parked with a resume note — any session can pick it up when he rules."*
 Then ONE sentence of your own, e.g. *"I'll watch for the response — say `pull mike`
 anytime."* If it's a new reviewer, add: *"first time for Mike — no account, the link
 just works."* Print links plainly (they may not be clickable in a terminal).
+
+A fan-out reports as **ONE block, not N**. Artifact, version and question are shared;
+only the person and their own hand link differ, and each of those is a credential for
+the person on that row:
+
+```
+**Sent to design — 3 people, 3 separate asks** · `{artifact name}` v{n}
+Ask: _"{objective, echoed back}"_
+Each was emailed their own link. Hand-deliver instead (Slack/DM, works once):
+  mike@acme.com    {hand_url}
+  dana@acme.com    {hand_url}
+  sam@partner.co   {hand_url}
+```
+
+Its one sentence says the shape: independent asks, nobody knows about the others,
+`/hgd-status` covers all three in one call, and the first answer back is not *the*
+answer — it is one of three. List any address that failed right under the ones that
+went.
 
 ## Guardrails
 
