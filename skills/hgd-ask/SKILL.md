@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.11.0
+HGD_SKILLS_VERSION=4.0.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -168,6 +168,57 @@ the rest ungated for feedback.
 If a call fails partway through (bad address, 422), the asks already opened stay open —
 there is nothing to undo and no reason to. Report what landed and what didn't, and let
 the operator retry the failures by address.
+
+## Ask a shape, not just a question — `"kind"`
+
+`ask` is *timing*. **`kind` is shape: what comes back.** They are orthogonal —
+any kind composes with any preset.
+
+| `"kind"` | Use when | Costs them |
+|---|---|---|
+| `review` *(default)* | you want their words on the thing | ~a minute |
+| `choice` | you generated alternatives and need a human to pick | ~15 seconds |
+| `form` | you are unsure about several specific things | summed, ~1–3 min |
+
+**A form is 1–5 questions and the cap is real** — the server refuses six. You
+write the form because you know what you were unsure about; if you need more
+than five, you are researching rather than asking. Narrow it, or send two asks.
+
+```bash
+  -d '{"artifact":"<uuid>","reviewer_email":"mike@partner.co",
+       "objective":"<verbatim>","kind":"form",
+       "questions":[
+         {"prompt":"Does the refund window read clearly?","qtype":"bool"},
+         {"prompt":"How confident are you in the tone?","qtype":"scale"},
+         {"prompt":"Which opening works better?","qtype":"pick",
+          "choices":["We are sorry","Let us fix this"]},
+         {"prompt":"Anything you would cut?","qtype":"text"}]}'
+```
+
+`qtype` is `text` | `scale` (1–5) | `bool` | `pick` (2–4 `choices`).
+
+**Every question is optional to answer**, and there is always an extra free-form
+field you did not write. Do not add "anything else?" as a question — it is
+already there, and it is where the thing you failed to ask about comes back.
+
+Ask for typing only where the answer has to be prose. Four taps and one sentence
+is a different favour from four paragraphs.
+
+## Say what a ruling will do — `"capsule"`
+
+On any ask that wants a ruling, `"capsule"` states **in the operator's terms
+what saying Ready will cause**:
+
+```json
+{"capsule": "A Ready deploys this to production within the hour."}
+```
+
+One sentence, ≤200 characters, refused past that. It shows above the buttons the
+reviewer presses, so approval is informed rather than assumed.
+
+**Never write one yourself.** If the operator has not said what happens, ask
+them — inventing a consequence is inventing a promise you cannot keep, in the
+one place a human is deciding whether to authorise something.
 
 ## Write it down — `.humangated/`
 

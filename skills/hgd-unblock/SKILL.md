@@ -19,7 +19,7 @@ outside the scope, or `/hgd-status` to see whether the reviewer has answered.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.11.0
+HGD_SKILLS_VERSION=4.0.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 

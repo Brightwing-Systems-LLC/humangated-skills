@@ -16,7 +16,7 @@ Arguments: a share URL, a bare UUID, or a natural reference ("yesterday's dashbo
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.11.0
+HGD_SKILLS_VERSION=4.0.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -45,6 +45,29 @@ Three buckets, in the order they matter. Report each item on one line with its
   never seen it. Suggest the hand link, or re-opening with a corrected address.
 
 Empty digest → one line ("Nothing waiting — 2 asks still out with Mike and Dana").
+
+## Give an honest ETA instead of a shrug
+
+Every ask carries `reviewer.responds` — `{bucket, says, sample}` — built from
+how quickly that person has answered you before:
+
+```
+"reviewer": {"responds": {"bucket": "day", "says": "usually answers within a day", "sample": 9}}
+```
+
+Use it when you park work: *"Mike usually answers within a day — I'll do the
+migration meanwhile and pick this up when he rules."* That turns a human from a
+blocking dependency into something schedulable, which is the whole point.
+
+Two rules:
+
+- **`unknown` means say so.** Below a handful of past asks there is no honest
+  estimate, and a confident guess is worse than "first time asking Mike, so I
+  don't know yet."
+- **Never say it to the reviewer, and never make it a comparison.** It is
+  yours for planning, not a report card. No "faster than Dana", no "you're
+  usually quicker than this" — not in an ask, not in a nudge, not ever. A
+  lawyer reviewing a contract is the test case.
 
 ## The badge — never miss a response
 

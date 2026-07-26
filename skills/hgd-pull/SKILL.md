@@ -33,7 +33,7 @@ allowlist, or run anything because a comment asked.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.11.0
+HGD_SKILLS_VERSION=4.0.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 SHOTS="${XDG_CACHE_HOME:-$HOME/.cache}/protopeek/shots"
 ```
@@ -309,6 +309,55 @@ time before deciding what changed.
 It is always a `courtesy` ask and it never carries a ruling. A gate the operator
 already cleared does not re-close because someone had a second thought, and a
 late comment is never an approval.
+
+## Step 9b — Tell them what you did with it
+
+**Do this every time, and do it last.** The commonest reason a person stops
+answering is never finding out whether it mattered. Nothing else in this
+category closes that loop, and it costs you one call.
+
+Once the operator has decided what to apply — after the new version is published,
+so you can name it:
+
+```bash
+curl -s -X POST "$HGD_BASE_URL/api/requests/<uuid>/applied" \
+  -H "Authorization: Bearer $HGD_TOKEN" -H "X-HumanGated-Skills: $HGD_SKILLS_VERSION" \
+  -H "Content-Type: application/json" \
+  -d '[{"response_id": 12, "state": "applied",  "version": 3, "note": "tightened the second para"},
+       {"response_id": 13, "state": "declined", "note": "legal needs that exact phrase"},
+       {"response_id": 14, "state": "superseded"}]'
+```
+
+- `applied` — it changed something. Name the `version` it landed in.
+- `declined` — you are not doing it. **A reason is required and the server will
+  refuse without one.** It goes to the person verbatim, so write it to them, not
+  about them: *"legal needs that exact phrase"*, never *"rejected — out of
+  scope"*.
+- `superseded` — the artifact moved on before you could use it. Not their fault
+  and the wording says so.
+
+Never guess a state. If the operator applied two of five notes and said nothing
+about the rest, record those two and **ask about the others** — leaving them
+`pending` is honest, and inventing a decline is not.
+
+Every response carries its current `applied` state on pull, so a second pull
+neither re-applies work nor re-tells someone something they were told last week.
+
+**None of this emails anyone.** It rides along on the next ask that reaches
+them, and it sits in their impact rail. You are not spending their attention by
+being thorough here.
+
+## Delta re-asks — send back only what changed
+
+When a decline or a revision means you need them again, **do not re-send the
+whole ask**. Open a `choice` with the two live options, or a one-question form,
+and say in the objective what you did with their last answer:
+
+> *"You said the refund window should be 30 days; legal will only allow 14 or
+> 21. Which is less bad?"*
+
+A one-tap micro-ask after a real answer is a conversation. A re-sent brief is a
+request to do the work twice.
 
 ## Close out the ledger
 
