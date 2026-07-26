@@ -1,7 +1,7 @@
 {
   "name": "humangated",
   "description": "The translation-free review loop for you and your coding agent: hgd-share (prototypes + prompts), hgd-ask (named humans, your question attached), hgd-pull (judgment back \u2014 suggested edits as ready-to-apply diffs), hgd-status, hgd-trail, hgd-list, hgd-delete, hgd-config.",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "author": {
     "name": "Brightwing Systems, LLC",
     "url": "https://humangated.ai"
