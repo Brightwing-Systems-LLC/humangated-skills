@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.5.0
+HGD_SKILLS_VERSION=3.6.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -47,16 +47,47 @@ curl -s -X POST "$HGD_BASE_URL/api/requests" \
        "objective":"<the operator's question, verbatim>"}'
 ```
 
-**Don't reach for `"urgency":"blocking"`.** It is accepted for compatibility and
-it is display-only — nothing enforces it, and telling a reviewer work is blocked
-when nothing is holding it teaches them to ignore the signal. If the work really
-is held, that is `"gate":true`, which the reviewer's email and inbox both reflect.
+## Declare what silence costs — `"ask"`
+
+The single most useful field. It decides what the reviewer is told and what the
+engine does if nobody answers, and those are the same thing by construction.
+
+| `"ask"` | Use when the operator says… | Blocks | At the deadline |
+|---|---|---|---|
+| `courtesy` *(default)* | "would love Mike's thoughts" | nothing | — |
+| `awaited` | "I'll hold until Friday, then move" | until then | proceeds without it |
+| `required` | "I can't ship without this" | until then | **abandons the work** |
+| `blocking` | "nothing moves until Mike says yes" | indefinitely | never expires |
+
+`awaited` and `required` need `"deadline"` (ISO-8601); `blocking` refuses one.
+
+**Prefer `required` over `blocking`.** An indefinite hold does not actually
+hold — somebody quietly gives up and it resolves as an unrecorded "no." If the
+operator asks for a hard block, ask them for a date first.
+
+**Never report silence as agreement.** An expired ask comes back `unopposed` or
+`abandoned`. It is never `approved`, and neither are you.
+
+```bash
+  -d '{"artifact":"<uuid>","reviewer_email":"mike@partner.co",
+       "objective":"<verbatim>","ask":"awaited",
+       "deadline":"2026-07-31T17:00:00-04:00","scope":["src/billing/**"]}'
+```
+
+`"scope"` is the paths you should leave alone while this is open. Say what you
+will do; nothing stops you yet, so don't claim otherwise.
+
+**Echo `"declared"` back verbatim.** Every response carries it — the exact
+sentence the reviewer was shown. Paraphrasing it is how your user ends up
+believing something different from what the reviewer was promised.
+
+`"urgency":"blocking"` is accepted and enforces nothing. Don't use it.
 
 Optional fields: `"verify":true` (sensitive items — the reviewer
 must verify their email before it opens); `"reshare":"off"` or `"reshare":"@acme.com"`
 (propagation policy; default `anyone`); `"ask_disposition":true` (ask for an explicit
-Ready / Needs-revision read); `"gate":true` (see Gates below — implies
-`ask_disposition`); `"reference":"..."` (a ticket id or issue URL — see below);
+Ready / Needs-revision read — use it when you want a ruling without holding
+anything); `"reference":"..."` (a ticket id or issue URL — see below);
 `"resume_note":"..."` (your note-to-future-self: what you were
 doing and what to do with each outcome — it comes back verbatim on every status,
 wait, and pull, so ANY later session can resume the workflow without the user
@@ -113,9 +144,11 @@ back where the team actually works — see `/hgd-pull`.
 
 ## Gates — block until the human rules
 
-When the user's intent is approval, not feedback ("get Mike's sign-off before we
-ship this"), open the ask with `"gate":true` and wait on the RULING — a comment
-doesn't resolve a gate, only Ready / Needs-revision does:
+When the intent is approval rather than feedback ("get Mike's sign-off before we
+ship this"), use `"ask":"required"` with a deadline — or `"ask":"blocking"` if
+there genuinely is no horizon. Both ask for a RULING, and a comment does not
+resolve one; only Ready / Needs-revision does. (`"gate":true` is the old
+spelling of `blocking` and still works.)
 
 ```bash
 while :; do
