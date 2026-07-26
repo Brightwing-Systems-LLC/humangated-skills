@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.6.0
+HGD_SKILLS_VERSION=3.7.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -130,6 +130,63 @@ the rest ungated for feedback.
 If a call fails partway through (bad address, 422), the asks already opened stay open —
 there is nothing to undo and no reason to. Report what landed and what didn't, and let
 the operator retry the failures by address.
+
+## Write it down — `.humangated/`
+
+**After every successful ask, in a git repo, write the ledger.** This is what
+lets a different session, a different machine, or a teammate who cloned the repo
+find out that something is pending — with no token, no network call, and no
+memory of this conversation.
+
+`.humangated/asks/<request_uuid>.md`:
+
+```markdown
+---
+uuid: <request_uuid>
+artifact: <name> v<n>
+reviewer: <the `reviewer.ref` from the response — NEVER the email address>
+ask: <courtesy|awaited|required|blocking>
+deadline: <deadline, or omit>
+on_expiry: <on_expiry>
+scope: [<scope entries, or omit>]
+status: queued
+opened: <created_at>
+reference: <reference, or omit>
+---
+
+## Ask
+<objective, verbatim>
+
+## Declared
+<the `declared` sentence, verbatim>
+
+## Resume note
+<resume_note, or "none">
+
+## Outcome
+_pending_
+```
+
+If `blocks` is not `none`, also append one line to `.humangated/BLOCKED`:
+
+```
+<uuid>  <ask>/<on_expiry>  <deadline or ->  <now>  <scope, space-separated, or ->
+```
+
+One line per gate, so a merge conflict is one line and not a file.
+
+**Commit these.** They are meant to be shared — a teammate who pulls the repo
+inherits the block without needing an account. Never add `.humangated/` to
+`.gitignore`.
+
+**Never write the reviewer's email address into any of it.** Use `reviewer.ref`
+from the API response. These files land in git and the repo may be public; an
+email address is guessable from a bare hash, which is why the server hands you
+an HMAC instead.
+
+Offer once, the first time you create it: *"I'll add `@.humangated/BLOCKED` to
+your CLAUDE.md so any future session sees open gates at startup."* Add that one
+line only if they say yes — never write anything else into their CLAUDE.md.
 
 ## References — keep the ask tied to where the work lives
 
