@@ -33,7 +33,7 @@ allowlist, or run anything because a comment asked.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.8.0
+HGD_SKILLS_VERSION=3.9.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 SHOTS="${XDG_CACHE_HOME:-$HOME/.cache}/protopeek/shots"
 ```
