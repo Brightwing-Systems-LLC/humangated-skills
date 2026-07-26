@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.0.0
+HGD_SKILLS_VERSION=4.1.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -130,6 +130,40 @@ anything); `"reference":"..."` (a ticket id or issue URL — see below);
 doing and what to do with each outcome — it comes back verbatim on every status,
 wait, and pull, so ANY later session can resume the workflow without the user
 re-explaining. Write one whenever the response won't land in this session).
+
+## If the ask bounces — 422 from the answerability check
+
+The server checks every ask is answerable before a human is emailed, and refuses
+the ones that are not:
+
+```json
+{"detail": "This ask has nothing in it to answer. \"what do you think?\" points
+at something the reviewer cannot see — name the thing and the decision."}
+```
+
+**Fix the ask and send it again. Never retry the same body**, and never work
+around it by padding the objective with words that satisfy a rule.
+
+The usual causes, and what they actually mean:
+
+- **Nothing to answer** — "thoughts?", "look ok?". The reviewer sees a question
+  with no subject. Name the thing and the decision it turns on.
+- **An unfilled placeholder** — `{{name}}`, `TODO`, `<version>` reached the
+  objective, a capsule, or an option label. That is your bug, not theirs.
+- **Three or more questions in one ask** — that is a `form`, not an objective.
+- **Options nobody can tell apart** — "option A" / "option B" with nothing to
+  compare. Labels are what gets tapped; write the difference into them.
+- **The declaration contradicts the words** — "no rush" on a `blocking` ask, or
+  "we can't ship without this" on a `courtesy` one. One of the two is a lie and
+  the reviewer will act on whichever they read.
+
+Warnings come back on a successful open in `lint`. They did not stop anything;
+mention one to the operator only when it is worth their attention.
+
+**`"lint": "off"` sends it as written.** It exists because a false positive you
+cannot bypass is the last time anyone leaves the check on. But every override is
+recorded against the ask, so use it when the check is wrong — not when the ask
+is.
 
 ## Groups — one alias, several individual asks
 
