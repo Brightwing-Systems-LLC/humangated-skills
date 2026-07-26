@@ -31,13 +31,13 @@ claude plugin install humangated@humangated
 |---|---|
 | `/hgd-login` | Link this machine to your account (browser link + magic-link email, no password) |
 | `/hgd-share` | Publish an HTML prototype or a prompt behind a private, time-boxed link |
-| `/hgd-ask` | Ask a named human your question about it — including **gates** that block until they rule |
+| `/hgd-ask` | Ask a named human your question about it — including **gates** that block until they rule, and **groups** that fan out into one ask per person |
 | `/hgd-pull` | Pull their judgment back: anchored comments, suggested edits as diffs, dispositions |
 | `/hgd-status` | The account digest — what came back, what's still out, what bounced |
 | `/hgd-trail` | The provenance trail: who saw what, when, at what assurance level |
 | `/hgd-list` | What you've shared |
 | `/hgd-delete` | Remove a share and its feedback |
-| `/hgd-config` | Show or change local defaults |
+| `/hgd-config` | Show or change local defaults, including reviewer groups |
 
 ## What's here, and what isn't
 
