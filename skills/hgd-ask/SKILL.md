@@ -1,6 +1,6 @@
 ---
 name: hgd-ask
-description: Use when the operator asks to get a named human's eyes on something they're building — "check with Mike on this prompt, ask him about X", "send this prototype to Dana for feedback", "have Sarah look at the refund logic", "ask the design group whether this reads right". Opens a HumanGated review request (this artifact, this version, this question, for this person), notifies them by email, and returns the share + hand-delivery links. A configured group opens one request per person. Does NOT wait for the response (use hgd-pull for that).
+description: Use when the operator asks to get a named human's eyes on something they're building — "check with Mike on this prompt, ask him about X", "send this prototype to Dana for feedback", "have Sarah look at the refund logic", "ask the design group whether this reads right" — or to have a human CHOOSE between alternatives you generated ("ask Mike which of these two wordings to ship", "let Dana pick a version"). Opens a HumanGated review request (this artifact, this version, this question, for this person), notifies them by email, and returns the share + hand-delivery links. A configured group opens one request per person. Does NOT wait for the response (use hgd-pull for that).
 ---
 
 Open one review request — *this artifact, this version, this question, for this person* —
@@ -82,6 +82,44 @@ sentence the reviewer was shown. Paraphrasing it is how your user ends up
 believing something different from what the reviewer was promised.
 
 `"urgency":"blocking"` is accepted and enforces nothing. Don't use it.
+
+## Ask them to PICK — `"kind":"choice"`
+
+When you have generated alternatives and the real question is *which one*, don't
+paste both into an objective and hope for prose back. Declare the choice and get
+a value:
+
+```bash
+  -d '{"artifact":"<uuid>","reviewer_email":"mike@partner.co",
+       "objective":"Which refund wording ships in v4?",
+       "kind":"choice",
+       "options":[
+         {"label":"keep it short","body":"Refunds within 30 days. No exceptions."},
+         {"label":"spell out every case","body":"Refunds within 30 days, unless…"}
+       ]}'
+```
+
+- **2 to 4 options.** Fewer is not a choice; more is a survey, and the API
+  refuses both with 422 before anyone is emailed. If you have five candidates,
+  narrowing to three is *your* job, not the reviewer's.
+- Each option needs a **`label`** — a short human phrase, because that is what
+  gets tapped and what comes back to you. `"body"` is the substance when it is
+  text worth comparing; `"pointer"` is a URL when it lives elsewhere. Either,
+  both, or neither.
+- The server assigns the ids **`a`, `b`, `c`, `d`** in the order you send them,
+  and returns them in `options`. Say the label out loud to the operator, never
+  the bare letter.
+- It **composes with every preset**: `courtesy`, `awaited`, `required` and
+  `blocking` all work on a choice ask and mean exactly what they mean anywhere
+  else.
+- On a gated choice ask **the pick IS the ruling** — do not also ask for a
+  Ready. `wait?until=disposition` resolves the moment the choice lands.
+
+Why prefer this over asking in prose: a choice ask genuinely takes the reviewer
+about **15 seconds**, and it comes back as `{"choice":"b","because":"…"}` — a
+value you can branch on instead of a paragraph you have to interpret. Every ask
+carries the reviewer-facing `action` and `effort` back to you ("Pick one of two
+· about 15 seconds"); quote those rather than inventing your own estimate.
 
 Optional fields: `"verify":true` (sensitive items — the reviewer
 must verify their email before it opens); `"reshare":"off"` or `"reshare":"@acme.com"`
@@ -246,6 +284,15 @@ from touching.** Say what you'll do; don't promise enforcement that isn't there.
 Ask: _"{objective, echoed back}"_
 {share_url}  ·  notified by email
 Hand-deliver instead (Slack/DM, works once): {hand_url}
+```
+
+A choice ask adds one line listing what they are choosing between, so the
+operator sees the ask they actually sent:
+
+```
+Pick one of two · about 15 seconds
+  A  keep it short
+  B  spell out every case
 ```
 
 For a gate, add one line: *"Blocked on Mike's Ready — I'll wait"* (if staying open)
