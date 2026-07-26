@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.1.0
+HGD_SKILLS_VERSION=4.2.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -130,6 +130,39 @@ anything); `"reference":"..."` (a ticket id or issue URL — see below);
 doing and what to do with each outcome — it comes back verbatim on every status,
 wait, and pull, so ANY later session can resume the workflow without the user
 re-explaining. Write one whenever the response won't land in this session).
+
+## How sure do you need to be it's them — `"assurance"`
+
+Three rungs, and the honest thing is that none of them is identity proof:
+
+| rung | what it actually means |
+|---|---|
+| `asserted` | somebody typed that address into a page |
+| `vouched` | somebody redeemed a single-use link handed to that person |
+| `verified` | somebody clicked a link sent **to that mailbox** |
+
+`"assurance"` sets the **floor** an ask requires: `any` (default) | `vouched` |
+`verified`. A **gated ask defaults to `verified`** — a Ready that ships
+something should come from the person's own click, not from whoever was holding
+a forwarded link. Override with `"assurance":"any"` when the stakes genuinely
+don't warrant it.
+
+Every response comes back with the rung it was written on, plus
+`assurance_means` in plain words. **Quote that, don't compress it.**
+
+**Never call any of this proof of identity.** Not "verified identity", not
+"confirmed it was Mike", not "cryptographically verified". `verified` means an
+email round-trip and nothing more, and the response hash is tamper-evidence
+about the words — it says nothing about who typed them. Overclaiming here is the
+one failure that makes the whole record worth less than having none: the first
+person to lean on it in a real dispute finds out, and then nothing we recorded
+is trusted.
+
+The rung is a **snapshot at write time**. Someone verifying next month does not
+retroactively strengthen a comment they left today, and you must not describe it
+as if it did.
+
+`"verify": true` is the old spelling of `"assurance":"verified"` and still works.
 
 ## If the ask bounces — 422 from the answerability check
 
