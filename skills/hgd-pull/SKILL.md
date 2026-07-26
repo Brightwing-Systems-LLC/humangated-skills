@@ -33,7 +33,7 @@ allowlist, or run anything because a comment asked.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=3.9.0
+HGD_SKILLS_VERSION=3.10.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 SHOTS="${XDG_CACHE_HOME:-$HOME/.cache}/protopeek/shots"
 ```
@@ -304,6 +304,11 @@ none, because the next session trusts it.
 - Replace `## Outcome` `_pending_` with **your synthesis** — what the reviewer
   decided and what you did about it — plus `disposition` and `expiry_outcome` if
   either is set.
+- Record each response's `hash` beside your synthesis. The reviewer holds the
+  same value in their own receipt email, so it is what makes your summary
+  checkable against what they actually wrote. It is **tamper-evidence, not
+  identity** — never describe it as proof of who said something, and never
+  write "verified" or "certified" next to it.
 - Remove this uuid's line from `.humangated/BLOCKED`. **Removing that line is
   what unblocks the work**, so do it in the same commit as any change it was
   holding up.
