@@ -25,7 +25,7 @@ BASE="${HGD_BASE_URL:-https://humangated.ai}"
 
 digest=$(curl -sS --max-time 6 "$BASE/api/inbox" \
   -H "Authorization: Bearer $HGD_TOKEN" \
-  -H "X-HumanGated-Skills: 3.10.0" 2>/dev/null) || exit 0
+  -H "X-HumanGated-Skills: 3.11.0" 2>/dev/null) || exit 0
 printf '%s' "$digest" | jq -e . >/dev/null 2>&1 || exit 0
 
 waiting=$(printf '%s' "$digest" | jq -r '.counts.responses_waiting // 0')
