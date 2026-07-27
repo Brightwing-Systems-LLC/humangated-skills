@@ -261,11 +261,11 @@ fi
 
 while IFS= read -r line || [ -n "$line" ]; do
   case "$line" in ''|\#*) continue ;; esac
-  # glob  preset  reviewer|-  reason…
+  # glob  preset  reason…
   set -- $line
-  [ $# -ge 3 ] || continue
-  glob=$1 preset=$2 who=$3
-  shift 3
+  [ $# -ge 2 ] || continue
+  glob=$1 preset=$2
+  shift 2
   reason="$*"
   [ "$preset" = "courtesy" ] && continue
 
@@ -279,8 +279,6 @@ while IFS= read -r line || [ -n "$line" ]; do
   done <<< "$rule_paths"
   [ -n "$hit" ] || continue
 
-  target_who="whoever your team asks"
-  [ "$who" != "-" ] && target_who="$who"
   because=""
   [ -n "$reason" ] && [ "$reason" != "-" ] && because="
 Your team's reason: $reason"
@@ -291,7 +289,10 @@ Your team's reason: $reason"
 is not an open gate you can wait out — no one has been asked yet.$because
 
 Ask first:
-  /hgd-ask $target_who --$preset --scope '$glob' \"<what you need them to check>\"
+  /hgd-ask --$preset --scope '$glob' \"<what you need them to check>\"
+
+If your team's rule names a reviewer, the engine routes it to them — you do not
+need to know who, and this file deliberately does not say.
 
 Then land it once they rule. If the operator wants to ship without asking,
 that is their call to make out loud — not something to route around."
