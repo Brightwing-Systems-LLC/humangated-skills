@@ -35,13 +35,19 @@ CWD=$(printf '%s' "$INPUT" | jq -r '.cwd // ""')
 TOOL=$(printf '%s' "$INPUT" | jq -r '.tool_name // ""')
 [ -n "$CWD" ] || exit 0
 
-# The ledger is committed at the repo root; the agent may be anywhere under it.
+# The ledgers are committed at the repo root; the agent may be anywhere under
+# it. Walk for the DIRECTORY, not for BLOCKED: a team with standing rules and no
+# open gate has a .humangated/ with no BLOCKED in it, and looking for the file
+# walked straight past such a repo to / and then found nothing to enforce.
 root="$CWD"
-while [ "$root" != "/" ] && [ ! -f "$root/.humangated/BLOCKED" ]; do
+while [ "$root" != "/" ] && [ ! -d "$root/.humangated" ]; do
   root=$(dirname "$root")
 done
 BLOCKED="$root/.humangated/BLOCKED"
-[ -f "$BLOCKED" ] || exit 0
+RULES="$root/.humangated/RULES"
+# Either ledger is reason enough to keep going. A team can have standing rules
+# and no open gate, which is the ordinary state and the one this hook exists for.
+[ -f "$BLOCKED" ] || [ -f "$RULES" ] || exit 0
 
 # What is this tool about to touch?
 case "$TOOL" in
@@ -210,6 +216,85 @@ You told a named human this work was held. Do something outside that scope, or
 run /hgd-status to see whether they have answered. If the operator wants to
 proceed anyway, /hgd-unblock $uuid records the override with their reason —
 don't just work around this."
-done < "$BLOCKED"
+done < "$BLOCKED" 2>/dev/null
+
+# ── Standing sign-off rules ──────────────────────────────────────────────────
+#
+# An open gate says "this particular ask is outstanding". A rule says "this
+# ALWAYS gets signed off", and it fires when there is no ask at all — which is
+# the case the loop above cannot see, because nothing is in BLOCKED.
+#
+# Only landing is held, never editing. A rule that refused every edit under its
+# paths would make it impossible to write the change you then want reviewed,
+# and an agent that cannot prepare work cannot ask anybody about it. So the
+# rule's question is "may this go out", not "may this be typed".
+#
+# Cleared asks are recorded in a sibling ledger. Without it the hook cannot tell
+# "nobody ever asked" from "asked, ruled Ready, and shipped an hour ago", and it
+# would block the second one forever.
+[ -f "$RULES" ] || exit 0
+[ "$ACTION" = "run" ] || exit 0
+is_landing "$TARGET" || exit 0
+
+CLEARED="$root/.humangated/CLEARED"
+
+cleared_for() {  # $1 = path. Any cleared scope covering it releases the rule.
+  [ -f "$CLEARED" ] || return 1
+  while IFS= read -r c || [ -n "$c" ]; do
+    case "$c" in ''|\#*) continue ;; esac
+    set -- $c
+    [ $# -ge 3 ] || continue
+    shift 2
+    for glob in "$@"; do
+      matches_scope "$1" "$glob" && return 0
+    done
+  done < "$CLEARED"
+  return 1
+}
+
+# What this command would actually put into the world, same as above. If git
+# cannot answer, hold: an outward action with an unknown blast radius is exactly
+# what a standing rule is for.
+if ! rule_paths=$(landing_paths "$TARGET"); then
+  rule_paths="$TARGET"
+fi
+
+while IFS= read -r line || [ -n "$line" ]; do
+  case "$line" in ''|\#*) continue ;; esac
+  # glob  preset  reviewer|-  reason…
+  set -- $line
+  [ $# -ge 3 ] || continue
+  glob=$1 preset=$2 who=$3
+  shift 3
+  reason="$*"
+  [ "$preset" = "courtesy" ] && continue
+
+  hit=""
+  while IFS= read -r p; do
+    [ -n "$p" ] || continue
+    if matches_scope "$p" "$glob"; then
+      cleared_for "$p" && continue
+      hit="$p"; break
+    fi
+  done <<< "$rule_paths"
+  [ -n "$hit" ] || continue
+
+  target_who="whoever your team asks"
+  [ "$who" != "-" ] && target_who="$who"
+  because=""
+  [ -n "$reason" ] && [ "$reason" != "-" ] && because="
+Your team's reason: $reason"
+
+  deny "Your team requires sign-off on \`$glob\` before this ships.
+
+\`$hit\` is covered by a standing rule, and nothing has been ruled on it. This
+is not an open gate you can wait out — no one has been asked yet.$because
+
+Ask first:
+  /hgd-ask $target_who --$preset --scope '$glob' \"<what you need them to check>\"
+
+Then land it once they rule. If the operator wants to ship without asking,
+that is their call to make out loud — not something to route around."
+done < "$RULES"
 
 exit 0

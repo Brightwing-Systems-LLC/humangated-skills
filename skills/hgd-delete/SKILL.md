@@ -13,7 +13,7 @@ Arguments: a share URL, a bare UUID, or a natural reference ("the old signup car
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.3.0
+HGD_SKILLS_VERSION=4.4.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 

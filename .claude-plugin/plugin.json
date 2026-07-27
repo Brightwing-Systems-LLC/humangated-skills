@@ -1,7 +1,7 @@
 {
   "name": "humangated",
   "description": "The translation-free review loop for you and your coding agent: hgd-share (prototypes + prompts), hgd-ask (named humans, your question attached), hgd-pull (judgment back \u2014 suggested edits as ready-to-apply diffs), hgd-status, hgd-trail, hgd-list, hgd-delete, hgd-config, hgd-unblock. Ships hooks: a PreToolUse guard that refuses work inside an open gate's scope, a SessionStart digest, and a Stop re-check.",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "author": {
     "name": "Brightwing Systems, LLC",
     "url": "https://humangated.ai"
