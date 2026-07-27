@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.2.0
+HGD_SKILLS_VERSION=4.3.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -74,8 +74,11 @@ operator asks for a hard block, ask them for a date first.
        "deadline":"2026-07-31T17:00:00-04:00","scope":["src/billing/**"]}'
 ```
 
-`"scope"` is the paths you should leave alone while this is open. Say what you
-will do; nothing stops you yet, so don't claim otherwise.
+`"scope"` is the paths to leave alone while this is open. **In Claude Code with
+this plugin installed, that is enforced** — a PreToolUse hook reads
+`.humangated/BLOCKED` and refuses the edit. So say what will happen, not what
+you promise: you are describing a guard, not your own restraint. In any other
+agent nothing stops you and it IS your restraint — say which one you are in.
 
 **Echo `"declared"` back verbatim.** Every response carries it — the exact
 sentence the reviewer was shown. Paraphrasing it is how your user ends up

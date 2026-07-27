@@ -14,7 +14,7 @@ Arguments: empty to show; `set-default <domain>` / `clear-default`;
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.2.0
+HGD_SKILLS_VERSION=4.3.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
