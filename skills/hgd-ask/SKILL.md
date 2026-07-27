@@ -167,6 +167,33 @@ as if it did.
 
 `"verify": true` is the old spelling of `"assurance":"verified"` and still works.
 
+## Your team may have already decided — standing rules
+
+An organisation can set standing sign-off rules: *anything under `src/billing/**`
+is asked as `required`, of Mike*. When your `scope` overlaps one, the engine
+applies it as the ask is created, and **what comes back may not be what you
+sent**:
+
+- The declaration is **raised** to meet the rule. `courtesy` becomes `required`
+  if that is what the team requires. It is never lowered — if you asked for
+  something stronger than the rule, you keep it, because being more careful than
+  your team requires is not a mistake.
+- The **reviewer may be reassigned** to whoever the rule names, whatever address
+  you passed.
+
+Neither is an error and neither needs mentioning unless the operator would be
+surprised. Report what actually happened — the response is the truth, not your
+request.
+
+One case does come back as a **422**: a rule that raises your ask to `awaited` or
+`required` promises the reviewer a specific time, so the ask now needs a
+`deadline` you did not send. The refusal quotes the rule and the team's own
+reason for it. **Add a deadline and send again.** Do not retry with `"lint":
+"off"` — that flag is for the answerability check and does nothing here, and the
+rule is not a thing to route around.
+
+You never need to look these up. They apply themselves.
+
 ## If the ask bounces — 422 from the answerability check
 
 The server checks every ask is answerable before a human is emailed, and refuses

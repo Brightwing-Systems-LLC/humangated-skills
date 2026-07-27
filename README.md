@@ -25,7 +25,7 @@ claude plugin marketplace add Brightwing-Systems-LLC/humangated-skills
 claude plugin install humangated@humangated
 ```
 
-## The nine verbs
+## The ten verbs
 
 | Skill | What it does |
 |---|---|
@@ -38,6 +38,27 @@ claude plugin install humangated@humangated
 | `/hgd-list` | What you've shared |
 | `/hgd-delete` | Remove a share and its feedback |
 | `/hgd-config` | Show or change local defaults, including reviewer groups |
+| `/hgd-unblock` | Release one open gate, on the record, when the operator says so |
+
+## The hooks
+
+Three shell hooks ship alongside the skills, and they are the only part of this
+that can actually stop an agent — skill text is a request a model may decline.
+
+| Hook | What it does |
+|---|---|
+| `PreToolUse` | Refuses an edit inside an open gate's scope, and refuses a commit or deploy under a path your team requires sign-off on |
+| `SessionStart` | Puts pending judgment in front of the model before it works, and caches your team's rules for the guard |
+| `Stop` | Reminds the operator about anything still waiting |
+
+Every one of them **fails open**: no jq, no network, no ledger, anything
+unexpected at all, and they block nothing. A guard that wrongly blocks is
+uninstalled within the hour, and then it protects nothing.
+
+They read and write `.humangated/` at your repository root — `BLOCKED` (open
+gates), `RULES` (your team's standing rules) and `CLEARED` (what has been ruled
+Ready). **These are meant to be committed**, so a teammate who clones the repo
+inherits them. None of them ever contains a reviewer's email address.
 
 ## What's here, and what isn't
 

@@ -15,6 +15,28 @@ Run it when they say so in words — "go ahead anyway", "override it", "I'll dea
 with Mike". If they merely sound impatient, offer the alternatives first: work
 outside the scope, or `/hgd-status` to see whether the reviewer has answered.
 
+## Step 1b — Check it is actually a gate
+
+The guard refuses two different things, and only one of them is unblockable.
+
+**An open gate** names a uuid: *"Blocked on an open HumanGated gate. Ask
+3f2a… (required) covers `src/billing/**`."* Somebody was asked and has not
+answered. That is what this skill releases.
+
+**A standing team rule** names a path and no uuid: *"Your team requires sign-off
+on `src/billing/**` before this ships."* **Nobody has been asked yet.** There is
+no gate to override and no uuid to pass — running this achieves nothing.
+
+The fix there is to ask, which is what the rule is for:
+
+```
+/hgd-ask --required --scope 'src/billing/**' "<what they need to check>"
+```
+
+If the operator wants to ship without asking at all, that is a real decision and
+it is theirs — but it is made by turning the rule off in their team settings, out
+loud, not by an override recorded against an ask that does not exist.
+
 ## Step 2 — Ask why, once
 
 ```bash
