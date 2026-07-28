@@ -15,8 +15,14 @@ Gemini CLI, Cursor, OpenCode, GitHub Copilot, Goose, Windsurf, Zed, Amp, and
 the rest of the Agent-Skills ecosystem:
 
 ```bash
-npx skills@latest add Brightwing-Systems-LLC/humangated-skills
+npx skills@latest add -g --skill '*' Brightwing-Systems-LLC/humangated-skills
 ```
+
+`-g` installs for your user rather than the current project — these share one login in
+`~/.config/humangated/`, so they are machine-level tools, not per-repo dependencies.
+`--skill '*'` takes all ten verbs without making you tick ten boxes. The installer still
+shows you its security assessment and asks before writing anything; don't add `-y` unless
+you want to skip that.
 
 Or natively in Claude Code:
 
