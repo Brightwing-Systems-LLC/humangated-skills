@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "HumanGated \u2014 share HTML prototypes for annotated review, pull the feedback back into your agent.",
-    "version": "4.5.0"
+    "version": "4.5.1"
   },
   "plugins": [
     {

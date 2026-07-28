@@ -15,7 +15,7 @@ Gemini CLI, Cursor, OpenCode, GitHub Copilot, Goose, Windsurf, Zed, Amp, and
 the rest of the Agent-Skills ecosystem:
 
 ```bash
-npx skills@latest add -g --skill '*' Brightwing-Systems-LLC/humangated-skills
+npx skills@latest add Brightwing-Systems-LLC/humangated-skills -g --skill '*'
 ```
 
 `-g` installs for your user rather than the current project — these share one login in

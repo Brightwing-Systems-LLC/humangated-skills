@@ -11,7 +11,7 @@ person stack in that person's single durable inbox automatically.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.5.0
+HGD_SKILLS_VERSION=4.5.1
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 

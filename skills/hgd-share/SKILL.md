@@ -32,7 +32,7 @@ Arguments: the first token is the path to the self-contained `.html` file. Optio
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.5.0
+HGD_SKILLS_VERSION=4.5.1
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 
@@ -150,7 +150,7 @@ binary endpoints that have nowhere to put it, the `X-HumanGated-Skills-Status` h
 Ask before updating, then run exactly ONE of:
 
 ```bash
-npx skills@latest add -g --skill '*' Brightwing-Systems-LLC/humangated-skills   # if installed via npx
+npx skills@latest add Brightwing-Systems-LLC/humangated-skills -g --skill '*'   # if installed via npx
 claude plugin install humangated@humangated                                  # if installed as a plugin
 ```
 
