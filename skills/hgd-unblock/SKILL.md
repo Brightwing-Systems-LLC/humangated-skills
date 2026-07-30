@@ -41,7 +41,7 @@ loud, not by an override recorded against an ask that does not exist.
 
 ```bash
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}/humangated"
-HGD_SKILLS_VERSION=4.5.1
+HGD_SKILLS_VERSION=4.6.0
 [ -n "$HGD_TOKEN" ] || . "$CFG/config" 2>/dev/null
 ```
 

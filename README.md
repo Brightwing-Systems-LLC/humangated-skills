@@ -45,6 +45,7 @@ claude plugin install humangated@humangated
 | `/hgd-delete` | Remove a share and its feedback |
 | `/hgd-config` | Show or change local defaults, including reviewer groups |
 | `/hgd-unblock` | Release one open gate, on the record, when the operator says so |
+| `/hgd-extend` | Give a share another 30 days — before it expires or after, up to the deletion date (Pro) |
 
 ## The hooks
 
